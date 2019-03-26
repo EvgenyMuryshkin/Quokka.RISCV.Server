@@ -3,11 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <Version>1.0.0.1</Version>
-    <Description>API endpoint for RISC-C toolchain, running inside docker container</Description>
+    <Description>API endpoint for RISC-V toolchain, running inside docker container</Description>
     <Copyright>Evgeny Muryshkin, 2019</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/EvgenyMuryshkin/Quokka.RISCV.Docker.Server</PackageProjectUrl>
-    <PackageTags>FPGA, RISC-C</PackageTags>
+    <PackageTags>FPGA, RISC-V</PackageTags>
+    <Authors>Evgeny Muryshkin</Authors>
+    <Company>Quokka Robotics</Company>
+    <RepositoryUrl>https://github.com/EvgenyMuryshkin/Quokka.RISCV.Docker.Server</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
