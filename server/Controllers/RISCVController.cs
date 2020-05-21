@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Quokka.RISCV.Integration.DTO;
@@ -29,6 +31,17 @@ namespace server.Controllers
                 Console.WriteLine(ex);
 
                 return BadRequest(ex.ToString());
+            }
+        }
+
+        [HttpPost("[action]")]
+        public async Task<ActionResult> Asm()
+        {
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                var asmSource = await reader.ReadToEndAsync();
+
+                return File(Toolchain.Asm(asmSource), "application/octet-stream");
             }
         }
     }

@@ -40,5 +40,18 @@ namespace Quokka.RISCV.Integration.Generator
                 return result;
             }
         }
+
+        public static FSSnapshot AsmTemplates
+        {
+            get
+            {
+                var result = new FSSnapshot();
+
+                result.Add("makefile", Resources.asm_makefile);
+                result.Add("sections.lds", Resources.asm_sections);
+
+                return result;
+            }
+        }
     }
 }

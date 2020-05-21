@@ -19,7 +19,7 @@ namespace Quokka.RISCV.Integration {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -57,6 +57,46 @@ namespace Quokka.RISCV.Integration {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to elf: sections.lds test.S
+        ///	riscv32-unknown-elf-gcc -march=rv32i -nostartfiles -Wl,-Bstatic,-T,sections.lds,--strip-debug,-Map=firmware.map,--cref  -ffreestanding -nostdlib -o firmware.elf test.S
+        ///
+        ///bin: elf
+        ///	riscv32-unknown-elf-objcopy -O binary firmware.elf /dev/stdout &gt; firmware.bin
+        ///
+        ///clean:
+        ///	rm -f firmware.elf firmware.bin firmware.map
+        ///.
+        /// </summary>
+        internal static string asm_makefile {
+            get {
+                return ResourceManager.GetString("asm.makefile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MEMORY
+        ///{
+        ///    RAM (xrw)       : ORIGIN = 0x00000000, LENGTH = 0x008000 /* 32 KB */
+        ///}
+        ///
+        ///SECTIONS {
+        ///    .text :
+        ///    {
+        ///        . = ALIGN(4);
+        ///        *(.text)           /* .text sections (code) */
+        ///        *(.text*)          /* .text* sections (code) */
+        ///        *(.rodata)         /* .rodata sections (constants, strings, etc.) */
+        ///        *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
+        ///        *(.srodata)         /* .rodata sections (constants, strings, etc.) */
+        ///        *(.srodata [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string asm_sections {
+            get {
+                return ResourceManager.GetString("asm_sections", resourceCulture);
             }
         }
         

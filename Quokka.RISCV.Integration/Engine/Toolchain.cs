@@ -1,4 +1,5 @@
 ﻿using Quokka.RISCV.Integration.DTO;
+using Quokka.RISCV.Integration.Generator;
 using Quokka.RISCV.Integration.RuleHandlers;
 using System;
 using System.Collections.Generic;
@@ -49,6 +50,38 @@ namespace Quokka.RISCV.Integration.Engine
             _rules = new RulesManager(RootPath).CreateRules(rules);
         }
 
+        static void FSCall(CommandLineInfo commandLine)
+        {
+            Console.WriteLine($"Running {commandLine.Arguments}");
+
+            var psi = new ProcessStartInfo()
+            {
+                FileName = commandLine.FileName,
+                Arguments = commandLine.Arguments,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            };
+
+            var process = new Process()
+            {
+                StartInfo = psi
+            };
+            process.Start();
+            string result = process.StandardOutput.ReadToEnd();
+            string errors = process.StandardError.ReadToEnd();
+
+            process.WaitForExit();
+
+            Console.WriteLine($"Completed with {process.ExitCode}");
+            Console.WriteLine($"Stdout: {result}");
+            Console.WriteLine($"Stderror {errors}");
+
+            if (process.ExitCode != 0)
+                throw new Exception(errors);
+        }
+
         public void Invoke(IEnumerable<ToolchainOperation> operations)
         {
             var current = Directory.GetCurrentDirectory();
@@ -62,35 +95,7 @@ namespace Quokka.RISCV.Integration.Engine
                     {
                         case CommandLineInfo commandLine:
                         {
-                            Console.WriteLine($"Running {commandLine.Arguments}");
-
-                            var psi = new ProcessStartInfo()
-                            {
-                                FileName = commandLine.FileName,
-                                Arguments = commandLine.Arguments,
-                                RedirectStandardOutput = true,
-                                RedirectStandardError = true,
-                                UseShellExecute = false,
-                                CreateNoWindow = true,
-                            };
-
-                            var process = new Process()
-                            {
-                                StartInfo = psi
-                            };
-                            process.Start();
-                            string result = process.StandardOutput.ReadToEnd();
-                            string errors = process.StandardError.ReadToEnd();
-
-                            process.WaitForExit();
-
-                            Console.WriteLine($"Completed with {process.ExitCode}");
-                            Console.WriteLine($"Stdout: {result}");
-                            Console.WriteLine($"Stderror {errors}");
-
-                            if (process.ExitCode != 0)
-                                throw new Exception(errors);
-
+                            FSCall(commandLine);
                         }   break;
 
                         case ResetRules rst:
@@ -158,6 +163,33 @@ namespace Quokka.RISCV.Integration.Engine
             }
 
             return response;
+        }
+
+        public static byte[] Asm(string asmSource)
+        {
+            var requestId = Guid.NewGuid();
+            var tempPath = Path.Combine(Path.GetTempPath(), requestId.ToString());
+            var currentDirectory = Directory.GetCurrentDirectory();
+
+            try
+            {
+                Directory.CreateDirectory(tempPath);
+                var templates = IntegrationTemplatesLoader.AsmTemplates;
+                var fs = new FSManager(tempPath);
+                fs.SaveSnapshot(templates);
+                File.WriteAllText(Path.Combine(tempPath, "test.S"), asmSource);
+                Directory.SetCurrentDirectory(tempPath);
+                var cmdInvocation = new BashInvocation("make bin");
+                FSCall(cmdInvocation);
+                return File.ReadAllBytes("firmware.bin");
+            }
+            finally
+            {
+                Directory.SetCurrentDirectory(currentDirectory);
+
+                if (Directory.Exists(tempPath))
+                    Directory.Delete(tempPath, true);
+            }
         }
     }
 }
