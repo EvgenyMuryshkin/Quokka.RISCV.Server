@@ -1,5 +1,5 @@
 rm -rf /opt/qrv
-cd /Quokka.RISCV.Docker.Server
+cd ~/Quokka.RISCV.Docker.Server
 git pull
 cd server
 dotnet publish -c Release -o  /opt/qrv

@@ -10,6 +10,7 @@ using Quokka.RISCV.Integration.Engine;
 
 namespace server.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
     public class RISCVController : Controller
     {
@@ -37,11 +38,20 @@ namespace server.Controllers
         [HttpPost("[action]")]
         public async Task<ActionResult> Asm()
         {
-            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            try
             {
-                var asmSource = await reader.ReadToEndAsync();
+                using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+                {
+                    var asmSource = await reader.ReadToEndAsync();
 
-                return File(Toolchain.Asm(asmSource), "application/octet-stream");
+                    return File(Toolchain.Asm(asmSource), "application/octet-stream");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+
+                return BadRequest(ex.ToString());
             }
         }
     }

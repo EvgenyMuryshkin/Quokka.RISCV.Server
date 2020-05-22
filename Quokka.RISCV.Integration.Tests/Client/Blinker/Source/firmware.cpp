@@ -19,12 +19,11 @@ void main() {
     }
 
 	
-    // blink the user LED
-    uint32_t led_timer = 0;
+    uint32_t counter = 0;
        
-    while (1) {
-        LED1 = led_timer >> 16;
-        led_timer = led_timer + 1;
+    while (counter < data_size) {
+		data[counter] = counter;
+        counter = data[counter] + 1;
     } 
 
 }
