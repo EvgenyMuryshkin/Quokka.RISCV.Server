@@ -10,7 +10,7 @@ namespace Quokka.RISCV.Integration.Client
         public static RISCVIntegrationContext DefaultContext(string rootPath)
         {
             var context = new RISCVIntegrationContext()
-                .WithPort(15000)
+                .WithEndpoint(new RISCVIntegrationEndpoint())
                 .WithExtensionClasses(
                     new ExtensionClasses()
                         .Text("")

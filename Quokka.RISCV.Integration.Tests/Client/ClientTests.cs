@@ -19,6 +19,19 @@ namespace Quokka.RISCV.Docker.Server.Tests
     public class ClientTests
     {
         [TestMethod]
+        public async Task Asm()
+        {
+            var asm = @"
+addi x1, x0, 10
+addi x1, x0, -10
+";
+            var instructions = await RISCVIntegrationClient.Asm(new RISCVIntegrationEndpoint(), asm);
+            Assert.AreEqual(2, instructions.Length);
+            Assert.AreEqual(0x00A00093U, instructions[0]);
+            Assert.AreEqual(0xFF600093U, instructions[1]);
+        }
+
+        [TestMethod]
         public async Task ClientTest_Windows()
         {
             if (!Debugger.IsAttached)
@@ -27,7 +40,7 @@ namespace Quokka.RISCV.Docker.Server.Tests
             var testDataRoot = Path.Combine(Directory.GetCurrentDirectory(), "client", "TestDataWindows");
 
             var context = new RISCVIntegrationContext()
-                .WithPort(15001)
+                .WithEndpoint(new RISCVIntegrationEndpoint() { Port = 15001 })
                 .WithExtensionClasses(new ExtensionClasses().Text("cmd"))
                 .WithRootFolder(testDataRoot)
                 .WithAllRegisteredFiles()
@@ -49,7 +62,6 @@ namespace Quokka.RISCV.Docker.Server.Tests
             var testDataRoot = Path.Combine(Directory.GetCurrentDirectory(), "client", "TestDataDocker");
 
             var context = new RISCVIntegrationContext()
-                .WithPort(15000)
                 .WithExtensionClasses(new ExtensionClasses().Text("sh"))
                 .WithRootFolder(testDataRoot)
                 .WithAllRegisteredFiles()
@@ -76,7 +88,6 @@ namespace Quokka.RISCV.Docker.Server.Tests
             var testDataRoot = Path.Combine(Directory.GetCurrentDirectory(), "client", "TinyFPGA-BX");
 
             var context = new RISCVIntegrationContext()
-                .WithPort(15000)
                 .WithExtensionClasses(
                     new ExtensionClasses()
                         .Text("sh")
@@ -264,7 +275,6 @@ namespace Quokka.RISCV.Docker.Server.Tests
             var sourceRoot = @"C:\code\Quokka.RISCV.Docker.Server\Quokka.RISCV.Integration.Tests\Client\Blinker\Source";
 
             var context = new RISCVIntegrationContext()
-                .WithPort(15000)
                 .WithExtensionClasses(
                     new ExtensionClasses()
                         .Text("")

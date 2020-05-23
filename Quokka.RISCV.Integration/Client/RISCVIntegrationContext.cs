@@ -14,8 +14,7 @@ namespace Quokka.RISCV.Integration.Client
         public FSSnapshot SourceSnapshot = new FSSnapshot();
         public FSSnapshot ResultSnapshot = new FSSnapshot();
         public string DockerImage;
-        public string URL = "http://localhost";
-        public int Port = 15000;
+        public RISCVIntegrationEndpoint Endpoint = new RISCVIntegrationEndpoint();
         public List<ToolchainOperation> Operations = new List<ToolchainOperation>();
         public List<FileRule> ResultFileRules = new List<FileRule>();
 
@@ -48,10 +47,10 @@ namespace Quokka.RISCV.Integration.Client
             return result;
         }
 
-        public RISCVIntegrationContext WithURL(string url)
+        public RISCVIntegrationContext WithEndpoint(RISCVIntegrationEndpoint endpoint)
         {
             var result = Clone();
-            result.URL = url;
+            result.Endpoint = endpoint;
 
             return result;
         }
@@ -68,14 +67,6 @@ namespace Quokka.RISCV.Integration.Client
         {
             var result = Clone();
             result.ResultFileRules = rules.ToList();
-
-            return result;
-        }
-
-        public RISCVIntegrationContext WithPort(int port)
-        {
-            var result = Clone();
-            result.Port = port;
 
             return result;
         }
