@@ -60,7 +60,7 @@ namespace Quokka.RISCV.Integration.Engine
             {
                 var cls = classes.GetClass(Path.GetExtension(file));
 
-                var fileName = Path.IsPathFullyQualified(file) ? file.Substring(_rootPath.Length) : file;
+                var fileName = Path.IsPathRooted(file) ? file.Substring(_rootPath.Length) : file;
 
                 switch (cls)
                 {
