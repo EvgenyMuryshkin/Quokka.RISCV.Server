@@ -15,7 +15,7 @@ namespace server.Controllers
     public class RISCVController : Controller
     {
         [HttpPost("[action]")]
-        public async Task<ActionResult> Invoke([FromBody] BaseRequest request)
+        public ActionResult Invoke([FromBody] BaseRequest request)
         {
             try
             {
