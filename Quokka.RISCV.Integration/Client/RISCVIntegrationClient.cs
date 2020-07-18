@@ -31,7 +31,7 @@ namespace Quokka.RISCV.Integration.Client
                 var test = JsonHelper.Deserialize<InvokeRequest>(requestPayload);
 
                 var requestContent = new StringContent(requestPayload, Encoding.UTF8, "application/json");
-                var url = $"{context.Endpoint.URL}/Invoke";
+                var url = $"{context.Endpoint.RISCV}/Invoke";
 
                 var response = await client.PostAsync(url, requestContent);
 
@@ -62,7 +62,7 @@ namespace Quokka.RISCV.Integration.Client
         {
             using (var client = new HttpClient())
             {
-                var url = $"{endpoint.URL}/asm";
+                var url = $"{endpoint.RISCV}/asm";
                 var response = await client.PostAsync(url, new StringContent(asmSource));
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -72,6 +72,24 @@ namespace Quokka.RISCV.Integration.Client
 
                 var content = await response.Content.ReadAsByteArrayAsync();
                 return ToInstructions(content).ToArray();
+            }
+        }
+
+        public static async Task<bool> HealthCheck(RISCVIntegrationEndpoint endpoint)
+        {
+            var url = $"{endpoint.HealthCheck}/IsAlive";
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    var response = await client.GetAsync(url);
+                    return response.StatusCode == HttpStatusCode.OK;
+                }
+            }
+            catch
+            {
+                Console.WriteLine($"RISCV toolchain is not available: {url}");
+                return false;
             }
         }
     }

@@ -5,6 +5,8 @@
         public string Host = "http://localhost";
         public int Port = 15000;
 
-        public string URL => $"{Host}:{Port}/api/riscv";
+        public string HealthCheck => $"{Host}:{Port}/api/HealthCheck";
+        public string RISCV => $"{Host}:{Port}/api/RISCV";
+
     }
 }

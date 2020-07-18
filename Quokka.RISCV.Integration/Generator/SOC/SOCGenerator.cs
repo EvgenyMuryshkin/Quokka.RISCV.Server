@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Quokka.RISCV.Integration.Generator.DMA
+namespace Quokka.RISCV.Integration.Generator.SOC
 {
-    public class DMAGenerator
+    public class SOCGenerator
     {
-        public FSTextFile DMAImport(IEnumerable<DMARecord> data)
+        public FSTextFile SOCImport(IEnumerable<SOCRecord> data)
         {
             var content = new StringBuilder();
             foreach (var item in data)
@@ -27,7 +27,7 @@ namespace Quokka.RISCV.Integration.Generator.DMA
 
             return new FSTextFile()
             {
-                Name = "dma.h",
+                Name = "soc.h",
                 Content = content.ToString()
             };
         }

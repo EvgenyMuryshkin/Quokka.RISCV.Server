@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Quokka.RISCV.Integration.Generator.DMA
+namespace Quokka.RISCV.Integration.Generator.SOC
 {
-    public class DMATypeLookups
+    public class SOCTypeLookups
     {
         public static uint DataSize(Type data)
         {

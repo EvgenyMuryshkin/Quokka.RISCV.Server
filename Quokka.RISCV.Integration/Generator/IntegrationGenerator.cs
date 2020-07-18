@@ -1,5 +1,5 @@
 ﻿using Quokka.RISCV.Integration.DTO;
-using Quokka.RISCV.Integration.Generator.DMA;
+using Quokka.RISCV.Integration.Generator.SOC;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,7 +20,7 @@ namespace Quokka.RISCV.Integration.Generator
             return new FirmwareGenerator().FromTemplate(content);
         }
 
-        public string DataDeclaration(DMARecord record)
+        public string DataDeclaration(SOCRecord record)
         {
             if (record.Depth == 0)
             {
@@ -46,13 +46,13 @@ namespace Quokka.RISCV.Integration.Generator
             }
         }
 
-        public string DataDeclaration(List<DMARecord> externalData)
+        public string DataDeclaration(List<SOCRecord> externalData)
         {
             return string.Join("", externalData.Select(d => $"{DataDeclaration(d)}{Environment.NewLine}"));
         }
 
         public string DataControl(
-            DMARecord record,
+            SOCRecord record,
             IntegrationTemplates templates)
         {
             if (string.IsNullOrWhiteSpace(record.Template))
@@ -89,18 +89,18 @@ namespace Quokka.RISCV.Integration.Generator
         }
 
         public string DataControl(
-            List<DMARecord> externalData,
+            List<SOCRecord> externalData,
             IntegrationTemplates templates)
         {
             return string.Join("", externalData.Select(d => $"{DataControl(d, templates)}{Environment.NewLine}"));
         }
 
-        public string MemReady(List<DMARecord> externalData)
+        public string MemReady(List<SOCRecord> externalData)
         {
             return string.Join(" || ", externalData.Select(d => $"{d.HardwareName}_ready"));
         }
 
-        public string MemRData(List<DMARecord> externalData)
+        public string MemRData(List<SOCRecord> externalData)
         {
             if (!externalData.Any())
                 return "32'b0";

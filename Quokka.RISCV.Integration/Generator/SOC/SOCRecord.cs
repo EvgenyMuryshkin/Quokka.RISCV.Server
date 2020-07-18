@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text;
 
-namespace Quokka.RISCV.Integration.Generator.DMA
+namespace Quokka.RISCV.Integration.Generator.SOC
 {
-    public class DMARecord
+    public class SOCRecord
     {
         public int SegmentBits { get; set; } = 8;
 
@@ -14,7 +14,7 @@ namespace Quokka.RISCV.Integration.Generator.DMA
         public string Template { get; set; }
         public Type DataType { get; set; }
 
-        public uint Width => DMATypeLookups.DataSize(DataType);
-        public string CType => DMATypeLookups.CType(DataType);
+        public uint Width => SOCTypeLookups.DataSize(DataType);
+        public string CType => SOCTypeLookups.CType(DataType);
     }
 }

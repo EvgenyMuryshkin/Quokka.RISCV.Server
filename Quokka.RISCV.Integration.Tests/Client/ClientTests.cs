@@ -3,7 +3,7 @@ using Quokka.RISCV.Integration.Client;
 using Quokka.RISCV.Integration.DTO;
 using Quokka.RISCV.Integration.Engine;
 using Quokka.RISCV.Integration.Generator;
-using Quokka.RISCV.Integration.Generator.DMA;
+using Quokka.RISCV.Integration.Generator.SOC;
 using Quokka.RISCV.Integration.Tests.Tools;
 using System;
 using System.Collections.Generic;
@@ -128,9 +128,9 @@ addi x1, x0, -10
         [TestMethod]
         public async Task RISCV_Memory_UInt()
         {
-            var externalData = new List<DMARecord>()
+            var externalData = new List<SOCRecord>()
             {
-                new DMARecord() {
+                new SOCRecord() {
                     Segment = 0x00,
                     DataType = typeof(uint),
                     Depth = 512,
@@ -138,7 +138,7 @@ addi x1, x0, -10
                     HardwareName = "l_mem",
                     Template = "memory32"
                 },
-                new DMARecord() {
+                new SOCRecord() {
                     Segment = 0x01,
                     DataType = typeof(uint),
                     Depth = 16,
@@ -162,9 +162,9 @@ addi x1, x0, -10
         [TestMethod]
         public async Task RISCV_Memory_UShort()
         {
-            var externalData = new List<DMARecord>()
+            var externalData = new List<SOCRecord>()
             {
-                new DMARecord() {
+                new SOCRecord() {
                     Segment = 0x00,
                     DataType = typeof(uint),
                     Depth = 512,
@@ -172,7 +172,7 @@ addi x1, x0, -10
                     HardwareName = "l_mem",
                     Template = "memory32"
                 },
-                new DMARecord() {
+                new SOCRecord() {
                     Segment = 0x01,
                     DataType = typeof(ushort),
                     Depth = 16,
@@ -196,9 +196,9 @@ addi x1, x0, -10
         [TestMethod]
         public async Task RISCV_Memory_Byte()
         {
-            var externalData = new List<DMARecord>()
+            var externalData = new List<SOCRecord>()
             {
-                new DMARecord() {
+                new SOCRecord() {
                     Segment = 0x00,
                     DataType = typeof(uint),
                     Depth = 512,
@@ -206,7 +206,7 @@ addi x1, x0, -10
                     HardwareName = "l_mem",
                     Template = "memory32"
                 },
-                new DMARecord() {
+                new SOCRecord() {
                     Segment = 0x01,
                     DataType = typeof(byte),
                     Depth = 16,
@@ -233,9 +233,9 @@ addi x1, x0, -10
             //if (!Debugger.IsAttached)
             //    Assert.Inconclusive("Run local service and debug this test");
 
-            var externalData = new List<DMARecord>()
+            var externalData = new List<SOCRecord>()
             {
-                new DMARecord() {
+                new SOCRecord() {
                     Segment = 0x00,
                     DataType = typeof(uint),
                     Depth = 512,
@@ -243,7 +243,7 @@ addi x1, x0, -10
                     HardwareName = "l_mem",
                     Template = "memory32"
                 },
-                new DMARecord() {
+                new SOCRecord() {
                     Segment = 0x01,
                     DataType = typeof(uint),
                     SoftwareName = "LED1",
@@ -266,7 +266,7 @@ addi x1, x0, -10
         }
 
         async Task RunWithData(
-            List<DMARecord> externalData,
+            List<SOCRecord> externalData,
             string mainCode)
         {
             var textReplacer = new TextReplacer();
@@ -302,8 +302,8 @@ addi x1, x0, -10
             };
             firmwareTemplatePath = textReplacer.ReplaceToken(firmwareTemplatePath, firmwareMap);
 
-            var dmaGenerator = new DMAGenerator();
-            context.SourceSnapshot.Files.Add(dmaGenerator.DMAImport(externalData));
+            var dmaGenerator = new SOCGenerator();
+            context.SourceSnapshot.Files.Add(dmaGenerator.SOCImport(externalData));
 
             var generator = new IntegrationGenerator();
             context.SourceSnapshot.Files.Add(generator.Firmware(firmwareTemplatePath));
