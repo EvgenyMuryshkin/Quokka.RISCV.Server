@@ -35,6 +35,23 @@ namespace server.Controllers
             }
         }
 
+        [HttpPost("[action]/{target}")]
+        public async Task<ActionResult> Make(string target)
+        {
+            try
+            {
+                var result = await Toolchain.Make(Request.Body, target);
+
+                return File(result, "application/zip");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+
+                return BadRequest(ex.ToString());
+            }
+        }
+
         [HttpPost("[action]")]
         public async Task<ActionResult> Asm()
         {

@@ -11,6 +11,29 @@ namespace Quokka.RISCV.Docker.Server.Tests
     public class ToolchainTests
     {
         [TestMethod]
+        public void ZipTest()
+        {
+            var zipFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Directory.CreateDirectory(zipFolder);
+
+            var zipFile = $"{zipFolder}.zip";
+
+            var textFile = Path.Combine(zipFolder, "textFile.txt");
+            File.WriteAllText(textFile, "old content");
+            File.WriteAllBytes(Path.Combine(zipFolder, "binFile.bin"), new byte[] { 0, 1, 254, 255 });
+
+            zipFolder.CompressFolder(zipFile);
+            Assert.IsTrue(File.Exists(zipFile), "zip does not exists");
+            File.WriteAllText(Path.Combine(zipFolder, "textFile.txt"), "new content");
+
+            zipFile.ExtractZip(zipFolder);
+            Assert.AreEqual("old content", File.ReadAllText(textFile));
+
+            zipFolder.DeleteFileIfExists();
+            zipFolder.DeleteDirectoryIfExists();
+        }
+
+        [TestMethod]
         public void TempFolder()
         {
             var id = Guid.NewGuid();

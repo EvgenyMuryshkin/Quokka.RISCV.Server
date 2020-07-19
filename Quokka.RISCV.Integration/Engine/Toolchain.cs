@@ -1,10 +1,12 @@
-﻿using Quokka.RISCV.Integration.DTO;
+﻿using ICSharpCode.SharpZipLib.Zip;
+using Quokka.RISCV.Integration.DTO;
 using Quokka.RISCV.Integration.Generator;
 using Quokka.RISCV.Integration.RuleHandlers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -52,34 +54,43 @@ namespace Quokka.RISCV.Integration.Engine
 
         static void FSCall(CommandLineInfo commandLine)
         {
-            Console.WriteLine($"Running {commandLine.Arguments}");
+            Console.WriteLine($"Running [{commandLine.FileName} {commandLine.Arguments}]");
 
-            var psi = new ProcessStartInfo()
+            try
             {
-                FileName = commandLine.FileName,
-                Arguments = commandLine.Arguments,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            };
+                var psi = new ProcessStartInfo()
+                {
+                    FileName = commandLine.FileName,
+                    Arguments = commandLine.Arguments,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                };
 
-            var process = new Process()
+                var process = new Process()
+                {
+                    StartInfo = psi
+                };
+
+                process.Start();
+
+                string result = process.StandardOutput.ReadToEnd();
+                string errors = process.StandardError.ReadToEnd();
+
+                process.WaitForExit();
+
+                Console.WriteLine($"Completed with {process.ExitCode}");
+                Console.WriteLine($"Stdout: {result}");
+                Console.WriteLine($"Stderror {errors}");
+
+                if (process.ExitCode != 0)
+                    throw new Exception(errors);
+            }
+            catch(Exception ex)
             {
-                StartInfo = psi
-            };
-            process.Start();
-            string result = process.StandardOutput.ReadToEnd();
-            string errors = process.StandardError.ReadToEnd();
-
-            process.WaitForExit();
-
-            Console.WriteLine($"Completed with {process.ExitCode}");
-            Console.WriteLine($"Stdout: {result}");
-            Console.WriteLine($"Stderror {errors}");
-
-            if (process.ExitCode != 0)
-                throw new Exception(errors);
+                throw new Exception($"Exception running {commandLine.FileName} {commandLine.Arguments}", ex);
+            }
         }
 
         public void Invoke(IEnumerable<ToolchainOperation> operations)
@@ -163,6 +174,37 @@ namespace Quokka.RISCV.Integration.Engine
             }
 
             return response;
+        }
+
+        public static async Task<byte[]> Make(Stream zipStream, string target)
+        {
+            var resultId = Guid.NewGuid();
+            var zipFolder = Path.Combine(Path.GetTempPath(), $"{resultId}");
+            var zipFile = Path.Combine(Path.GetTempPath(), $"{resultId}.zip");
+            var currentDirectory = Directory.GetCurrentDirectory();
+
+            try
+            {
+                await zipFile.CreateFromStreamAsync(zipStream);
+
+                // extract to temp folder
+                zipFile.ExtractZip(zipFolder);
+                zipFile.DeleteFileIfExists();
+
+                Directory.SetCurrentDirectory(zipFolder);
+                var bashInvoke = new BashInvocation($"make {target}");
+                FSCall(bashInvoke);
+
+                // zip and return result
+                zipFolder.CompressFolder(zipFile);
+                return File.ReadAllBytes(zipFile);
+            }
+            finally
+            {
+                Directory.SetCurrentDirectory(currentDirectory);
+                zipFolder.DeleteDirectoryIfExists();
+                zipFile.DeleteFileIfExists();
+            }
         }
 
         public static byte[] Asm(string asmSource)

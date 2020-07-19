@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ICSharpCode.SharpZipLib.Zip;
+using Newtonsoft.Json;
 using Quokka.RISCV.Integration.DTO;
 using Quokka.RISCV.Integration.Tools;
 using System;
@@ -72,6 +73,37 @@ namespace Quokka.RISCV.Integration.Client
 
                 var content = await response.Content.ReadAsByteArrayAsync();
                 return ToInstructions(content).ToArray();
+            }
+        }
+
+        public static async Task Make(RISCVIntegrationContext context)
+        {
+            var zipFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    var url = $"{context.Endpoint.RISCV}/make/{context.MakeTarget}";
+                    var zfe = new ZipEntryFactory { IsUnicodeText = true };
+                    context.RootFolder.CompressFolder(zipFile);
+                    var content = File.ReadAllBytes(zipFile);
+
+                    var response = await client.PostAsync(url, new StreamContent(new MemoryStream(content)));
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        var exception = await response.Content.ReadAsStringAsync();
+                        throw new Exception(exception);
+
+                    }
+                    content = await response.Content.ReadAsByteArrayAsync();
+                    File.WriteAllBytes(zipFile, content);
+                    zipFile.ExtractZip(context.RootFolder);
+                }
+            }
+            finally
+            {
+                zipFile.DeleteFileIfExists();
             }
         }
 

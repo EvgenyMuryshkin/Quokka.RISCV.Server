@@ -17,6 +17,7 @@ namespace Quokka.RISCV.Integration.Client
         public RISCVIntegrationEndpoint Endpoint = new RISCVIntegrationEndpoint();
         public List<ToolchainOperation> Operations = new List<ToolchainOperation>();
         public List<FileRule> ResultFileRules = new List<FileRule>();
+        public string MakeTarget;
 
         protected RISCVIntegrationContext Clone()
         {
@@ -139,6 +140,16 @@ namespace Quokka.RISCV.Integration.Client
             result.DockerImage = dockerImage;
 
             return result;
+        }
+
+        public RISCVIntegrationContext WithMakeTarget(string target)
+        {
+            var result = Clone();
+
+            result.MakeTarget = target;
+
+            return result;
+
         }
     }
 }
