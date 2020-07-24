@@ -17,7 +17,7 @@ All good, proceed to installation section
 # Installation
 It is assumed that local server will be placed into ~/qrs location.
 
-Clone integration server ropository into your home directory
+Clone integration server repository into your home directory
 ```
 cd ~
 git clone https://github.com/EvgenyMuryshkin/Quokka.RISCV.Server.git qrs
@@ -25,7 +25,7 @@ git clone https://github.com/EvgenyMuryshkin/Quokka.RISCV.Server.git qrs
 
 Run installation script from qrs
 
-It will download and build all required tools, place launch nad update scripts into home directory for easy of use
+It will download and build all required tools, place launch and update scripts into home directory for easy of use
 ```
 cd ~/qrs
 chmod 766 ./install
