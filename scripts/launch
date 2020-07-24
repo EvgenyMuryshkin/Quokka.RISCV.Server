@@ -1,5 +1,3 @@
-/etc/init.d/webmin restart
-
 export PATH=$PATH:/opt/riscv32imc/bin
-cd /opt/qrv
+cd /opt/qrs
 dotnet server.dll

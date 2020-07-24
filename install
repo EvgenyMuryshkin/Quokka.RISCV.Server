@@ -17,7 +17,7 @@ sudo apt-get update; \
 
 rm -rf /tmp/dotnet-installer
 
-### install picorv32 and RISC-V toolchain 
+# install picorv32 and RISC-V toolchain 
 apt-get install -y \
 		autoconf automake autotools-dev curl libmpc-dev \
         libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo \
@@ -30,3 +30,15 @@ cd ~/picorv32
 make download-tools
 cd ~/picorv32
 yes | make -j$(nproc) build-riscv32imc-tools
+
+# cleanup
+rm -rf /var/cache/distfiles/riscv*
+rm -rf ./picorv32/riscv*
+
+# configure Quokka integration server
+cd ~
+cp -r ~/qrs/scripts/. ~
+chmod 766 ~/update ~/launch
+~/update
+
+# now you can run ~/launch
