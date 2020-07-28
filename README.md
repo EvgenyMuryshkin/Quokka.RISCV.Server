@@ -26,10 +26,11 @@ git clone https://github.com/EvgenyMuryshkin/Quokka.RISCV.Server.git qrs
 Run installation script from qrs
 
 It will download and build all required tools, place launch and update scripts into home directory for easy of use
+For Ubuntu 20:
 ```
 cd ~/qrs
-chmod 766 ./install
-sudo ./install
+chmod 766 ./install.20
+sudo ./install.20
 ```
 
 # Update
