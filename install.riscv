@@ -1,0 +1,17 @@
+# install picorv32 and RISC-V toolchain 
+sudo apt-get install -y \
+		autoconf automake autotools-dev curl libmpc-dev \
+        libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo \
+		gperf libtool patchutils bc zlib1g-dev libexpat1-dev
+
+# place all stuff in home folder
+cd ~
+git clone https://github.com/cliffordwolf/picorv32.git
+cd ~/picorv32
+make download-tools
+cd ~/picorv32
+yes | make -j$(nproc) build-riscv32imc-tools
+
+# cleanup
+rm -rf /var/cache/distfiles/riscv*
+rm -rf ./picorv32/riscv*
