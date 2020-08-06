@@ -9,7 +9,8 @@ namespace Quokka.RISCV.Integration.Generator.SOC
         {
             var sizes = new Dictionary<Type, uint>()
             {
-                { typeof(char),     8 },
+                { typeof(char),     16 },
+                { typeof(sbyte),    8 },
                 { typeof(byte),     8 },
                 { typeof(short),    16 },
                 { typeof(ushort),   16 },
@@ -27,7 +28,8 @@ namespace Quokka.RISCV.Integration.Generator.SOC
         {
             var sizes = new Dictionary<Type, string>()
             {
-                { typeof(char),     "char" },
+                { typeof(char),     "wchar_t" },
+                { typeof(sbyte),     "char" },
                 { typeof(byte),     "unsigned char" },
                 { typeof(short),    "short" },
                 { typeof(ushort),   "unsigned short" },
