@@ -16,6 +16,8 @@ namespace Quokka.RISCV.Integration.Generator.SOC
                 { typeof(ushort),   16 },
                 { typeof(int),      32 },
                 { typeof(uint),     32 },
+                { typeof(long),      64 },
+                { typeof(ulong),     64 },
             };
 
             if (!sizes.ContainsKey(data))
@@ -29,12 +31,14 @@ namespace Quokka.RISCV.Integration.Generator.SOC
             var sizes = new Dictionary<Type, string>()
             {
                 { typeof(char),     "wchar_t" },
-                { typeof(sbyte),     "char" },
-                { typeof(byte),     "unsigned char" },
-                { typeof(short),    "short" },
-                { typeof(ushort),   "unsigned short" },
-                { typeof(int),      "int" },
-                { typeof(uint),     "unsigned int" },
+                { typeof(sbyte),     "int8_t" },
+                { typeof(byte),     "uint8_t" },
+                { typeof(short),    "int16_t" },
+                { typeof(ushort),   "uint16_t" },
+                { typeof(int),      "int32_t" },
+                { typeof(uint),     "uint32_t" },
+                { typeof(long),      "int64_t" },
+                { typeof(ulong),     "uint64_t" },
             };
 
             if (!sizes.ContainsKey(data))
