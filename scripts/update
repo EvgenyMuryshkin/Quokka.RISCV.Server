@@ -2,5 +2,6 @@ sudo rm -rf /opt/qrs
 cd ~/qrs
 git reset HEAD --hard
 git pull
+chmod 766 ./install.prep ./install.net ./install.riscv ./install.srv
 cd server
 sudo dotnet publish -c Release -o  /opt/qrs

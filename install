@@ -1,9 +1,7 @@
-chmod 766 ./install.prep ./install.net ./install.riscv ./install.srv
-
 # run installation in sequence
-./install.prep
-./install.net
-./install.srv
-./install.riscv
+chmod 766 ./install.prep && ./install.prep
+chmod 766 ./install.net && ./install.net
+chmod 766 ./install.srv && ./install.srv
+chmod 766 ./install.riscv && ./install.riscv
 
 # now you can run ~/launch
