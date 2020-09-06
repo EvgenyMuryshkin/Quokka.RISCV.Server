@@ -14,4 +14,4 @@ yes | make -j$(nproc) build-riscv32imc-tools
 
 # cleanup
 rm -rf /var/cache/distfiles/riscv*
-rm -rf ./picorv32/riscv*
+rm -rf ~/picorv32/riscv*
