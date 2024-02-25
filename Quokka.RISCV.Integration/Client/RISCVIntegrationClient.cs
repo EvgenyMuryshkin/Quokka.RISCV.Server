@@ -1,6 +1,7 @@
 ﻿using ICSharpCode.SharpZipLib.Zip;
 using Newtonsoft.Json;
 using Quokka.RISCV.Integration.DTO;
+using Quokka.RISCV.Integration.Engine;
 using Quokka.RISCV.Integration.Tools;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +17,26 @@ namespace Quokka.RISCV.Integration.Client
 {
     public class RISCVIntegrationClient
     {
+        public static string LocalToolchainLocation()
+        {
+            var path = Environment.GetEnvironmentVariable("PATH");
+            var locations = path.Split(new char[] { ':', ';' });
+
+            var localNames = new string[] { "riscv32-unknown-elf-gcc", "riscv32-unknown-elf-gcc.exe" };
+
+            foreach (var location in locations)
+            {
+                foreach (var name in localNames)
+                {
+                    var gccPath = Path.Combine(location, name);
+                    if (File.Exists(gccPath))
+                        return location;
+                }
+            }
+
+            return null;
+        }
+
         public static async Task<RISCVIntegrationContext> Run(RISCVIntegrationContext context)
         {
             using (var client = new HttpClient() )
@@ -78,32 +100,49 @@ namespace Quokka.RISCV.Integration.Client
 
         public static async Task Make(RISCVIntegrationContext context)
         {
-            var zipFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-
-            try
+            if (HasLocalToolchain)
             {
-                using (var client = new HttpClient())
+                var currentDirectory = Directory.GetCurrentDirectory();
+
+                try
                 {
-                    var url = $"{context.Endpoint.RISCV}/make/{context.MakeTarget}";
-                    var zfe = new ZipEntryFactory { IsUnicodeText = true };
-                    context.RootFolder.CompressFolder(zipFile);
-                    var content = File.ReadAllBytes(zipFile);
-
-                    var response = await client.PostAsync(url, new StreamContent(new MemoryStream(content)));
-                    if (response.StatusCode != HttpStatusCode.OK)
-                    {
-                        var exception = await response.Content.ReadAsStringAsync();
-                        throw new Exception(exception);
-
-                    }
-                    content = await response.Content.ReadAsByteArrayAsync();
-                    File.WriteAllBytes(zipFile, content);
-                    zipFile.ExtractZip(context.RootFolder);
+                    Directory.SetCurrentDirectory(context.RootFolder);
+                    await Toolchain.Make(context.MakeTarget);
+                }
+                finally
+                {
+                    Directory.SetCurrentDirectory(currentDirectory);
                 }
             }
-            finally
+            else
             {
-                zipFile.DeleteFileIfExists();
+                var zipFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+
+                try
+                {
+                    using (var client = new HttpClient())
+                    {
+                        var url = $"{context.Endpoint.RISCV}/make/{context.MakeTarget}";
+                        var zfe = new ZipEntryFactory { IsUnicodeText = true };
+                        context.RootFolder.CompressFolder(zipFile);
+                        var content = File.ReadAllBytes(zipFile);
+
+                        var response = await client.PostAsync(url, new StreamContent(new MemoryStream(content)));
+                        if (response.StatusCode != HttpStatusCode.OK)
+                        {
+                            var exception = await response.Content.ReadAsStringAsync();
+                            throw new Exception(exception);
+
+                        }
+                        content = await response.Content.ReadAsByteArrayAsync();
+                        File.WriteAllBytes(zipFile, content);
+                        zipFile.ExtractZip(context.RootFolder);
+                    }
+                }
+                finally
+                {
+                    zipFile.DeleteFileIfExists();
+                }
             }
         }
 
@@ -122,6 +161,15 @@ namespace Quokka.RISCV.Integration.Client
             {
                 Console.WriteLine($"RISCV toolchain is not available: {url}");
                 return false;
+            }
+        }
+
+        public static bool HasLocalToolchain
+        {
+            get
+            {
+                // perform API call on Windows
+                return !RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
             }
         }
     }

@@ -65,8 +65,25 @@ namespace System
             if (!Directory.Exists(extractTo))
                 Directory.CreateDirectory(extractTo);
 
-            var zip = new FastZip();
-            zip.ExtractZip(zipFilePath, extractTo, ".*");
+            Exception ex = null;
+
+            for (var i = 1; i < 5; i++)
+            {
+                try
+                {
+                    var zip = new FastZip();
+                    zip.ExtractZip(zipFilePath, extractTo, ".*");
+                    return;
+                }
+                catch (IOException ioex)
+                {
+                    ex = ioex;
+                    Task.Delay(TimeSpan.FromMilliseconds(500 * i)).Wait();
+                }
+            }
+
+            if (ex != null)
+                throw ex;
         }
 
         public static void CompressFolder(this string directoryPath, string zipFileName)

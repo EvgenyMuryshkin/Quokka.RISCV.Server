@@ -175,6 +175,11 @@ namespace Quokka.RISCV.Integration.Engine
 
             return response;
         }
+        public static async Task Make(string target)
+        {
+            var bashInvoke = new BashInvocation($"make {target}");
+            FSCall(bashInvoke);
+        }
 
         public static async Task<byte[]> Make(Stream zipStream, string target)
         {
@@ -192,8 +197,7 @@ namespace Quokka.RISCV.Integration.Engine
                 zipFile.DeleteFileIfExists();
 
                 Directory.SetCurrentDirectory(zipFolder);
-                var bashInvoke = new BashInvocation($"make {target}");
-                FSCall(bashInvoke);
+                await Make(target);
 
                 // zip and return result
                 zipFolder.CompressFolder(zipFile);
